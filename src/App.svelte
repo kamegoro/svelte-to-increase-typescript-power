@@ -1,21 +1,42 @@
 <script lang="ts">
-  let value = ``;
-  let items = [];
+  type Item = {
+    id: number,
+    value: string,
+    isDone: boolean,
+  }
 
-  function addItem() {
+  let value = ``;
+  let items: Item[] = [];
+
+  function addItem(): void {
     const id = Date.now();
     items = [
       ...items,
       {
         id,
         value,
+        isDone: false,
       },
     ];
     value = ``;
   }
 
-  function delItem(id) {
+  function delItem(id: number): void {
     items = items.filter((v) => v.id !== id);
+  }
+
+  function updateArray<T extends { id: number }> (arr: T[], value: T, type?: `del`): T[] {
+    const index = arr.findIndex(v => v.id === value.id);
+    if (index === -1) {
+      arr = [...arr, value];
+    } else {
+      if (type === 'del') {
+        arr.splice(index, 1);
+      } else {
+        arr[index] = value;
+      }
+    }
+    return arr;
   }
 </script>
 
@@ -32,7 +53,7 @@
       {#each items as item}
         <li class="flex mb-2">
           <p class="mr-2">{item.value}</p>
-          <button on:click={delItem(item.id)}>削除</button>
+          <button on:click={() =>delItem(item.id)}>削除</button>
         </li>
       {/each}
     </ul>
